@@ -13,7 +13,7 @@ const DarkModeToggle = () => {
   };
 
   return (
-    <button onClick={toggleDarkMode}>
+    <button onClick={toggleDarkMode} className="m-4">
       {isDarkMode ? <LightMode /> : <DarkMode className="invert" />}
     </button>
   );

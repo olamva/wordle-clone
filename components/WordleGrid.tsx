@@ -1,8 +1,9 @@
 "use client";
 
+import Refresh from "@/public/refresh.svg";
 import allowedGuesses from "@/public/wordle-allowed-guesses.json";
 import answers from "@/public/wordle-answers-alphabetical.json";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const WordleGrid = () => {
   const AMT_ROWS = 6;
@@ -11,21 +12,33 @@ const WordleGrid = () => {
   let currentRow = 0;
   let currentCol = 0;
   let currentWord: string[] = [];
-  let isDone = false;
+  const [isDone, setIsDone] = useState<boolean>(false);
 
-  const wordToCheck = answers[Math.floor(Math.random() * answers.length)];
+  let wordToCheck = answers[Math.floor(Math.random() * answers.length)];
+  console.log(wordToCheck);
 
   const divRef = useRef<HTMLDivElement>(null);
 
+  const [displayEndScreen, setDisplayEndScreen] = useState<boolean>(false);
+  const [endScreenText, setEndScreenText] = useState<string>("");
+
   const handleKeyDown = (e: KeyboardEvent) => {
-    if (isDone) return;
+    if (isDone) {
+      if (e.key === "Escape") setDisplayEndScreen(false);
+      return;
+    }
     if (divRef.current === null) return;
+    if (e.metaKey || e.shiftKey || e.altKey || e.ctrlKey) return;
+    if (displayEndScreen) return;
+
     const divs = divRef.current.children;
     if (e.key === "Enter") {
       e.preventDefault();
+      console.log(currentWord, currentRow, currentCol);
       if (currentRow < AMT_ROWS && currentWord.length === AMT_COLS) {
-        return handleCheck(divs);
+        handleCheck(divs);
       }
+      return;
     }
 
     if (e.key === "Backspace" && currentCol > 0) {
@@ -34,6 +47,7 @@ const WordleGrid = () => {
       if (currentCol > 0) currentCol--;
       return;
     }
+
     if (currentCol === AMT_COLS) return;
     const nextDiv = divs[currentRow * AMT_COLS + currentCol];
     if (e.key.length !== 1 || !/[a-z]/.test(e.key)) return;
@@ -97,14 +111,17 @@ const WordleGrid = () => {
         }
       }
     });
+
     if (validationCheck === 1) {
-      alert("You won!");
-      isDone = true;
+      setEndScreenText("You win!");
+      setIsDone(true);
+      showEndScreen();
       return;
     }
     if (currentRow === AMT_ROWS - 1) {
-      alert("You lost... the word was: " + wordToCheck.toUpperCase());
-      isDone = true;
+      setEndScreenText("You lost... The word was " + wordToCheck.toUpperCase());
+      setIsDone(true);
+      showEndScreen();
       return;
     }
     currentRow++;
@@ -126,16 +143,66 @@ const WordleGrid = () => {
     return indexes;
   };
 
+  const reset = () => {
+    currentRow = 0;
+    currentCol = 0;
+    currentWord = [];
+    setIsDone(false);
+    setDisplayEndScreen(false);
+    setEndScreenText("");
+    if (divRef.current === null) return;
+    const divs = divRef.current.children;
+    for (let i = 0; i < divs.length; i++) {
+      divs[i].innerHTML = "";
+      divs[i].classList.remove("bg-green-400");
+      divs[i].classList.remove("dark:bg-green-500");
+      divs[i].classList.remove("bg-yellow-400");
+      divs[i].classList.remove("dark:bg-yellow-500");
+      divs[i].classList.add("bg-gray-200");
+      divs[i].classList.add("dark:bg-zinc-700");
+    }
+    wordToCheck = answers[Math.floor(Math.random() * answers.length)];
+  };
+
+  const showEndScreen = () => {
+    setTimeout(() => {
+      setDisplayEndScreen(true);
+    }, 500);
+  };
+
   return (
     <>
-      <div className="grid grid-cols-5 gap-2" ref={divRef}>
+      <div className="grid grid-cols-5 gap-2 w-fit" ref={divRef}>
         {Array.from({ length: AMT_ROWS * AMT_COLS }).map((_, i) => (
           <div
             key={i}
-            className="bg-gray-200 dark:bg-zinc-700 rounded h-20 dark:text-white text-center items-center justify-center flex text-4xl"
-          ></div>
+            className="bg-gray-200 dark:bg-zinc-700 rounded size-20 dark:text-white items-center justify-center flex text-4xl"
+          />
         ))}
       </div>
+      {displayEndScreen && (
+        <div
+          className="backdrop-blur-sm size-full  justify-center items-center flex fixed"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setDisplayEndScreen(false);
+            }
+          }}
+        >
+          <div className="dark:text-white bg-gray-300 dark:bg-zinc-800 items-center flex rounded p-8 flex-col">
+            {endScreenText}
+            <div className="h-4" />
+            <div
+              className="bg-zinc-200 dark:bg-zinc-900 p-2 rounded-lg flex-row flex items-center justify-center cursor-pointer"
+              onClick={reset}
+            >
+              Reset?
+              <div className="w-2" />
+              <Refresh />
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
