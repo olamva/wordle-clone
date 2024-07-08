@@ -83,14 +83,11 @@ const WordleGrid = () => {
     wordToCheck.split("").forEach((letter, i) => {
       if (letter === currentWord[i]) {
         const box = divs[currentRow * AMT_COLS + i];
-        box.classList.remove("bg-gray-200");
-        box.classList.remove("dark:bg-zinc-700");
+        box.classList.remove("bg-zinc-700");
         if (box.classList.contains("bg-yellow-400")) {
-          box.classList.remove("bg-yellow-400");
-          box.classList.remove("dark:bg-yellow-500");
+          box.classList.remove("bg-yellow-500");
         }
-        box.classList.add("bg-green-400");
-        box.classList.add("dark:bg-green-500");
+        box.classList.add("bg-green-500");
       } else if (currentWord.includes(letter)) {
         const indexes = findAllMatchingLetterIndexes(currentWord, letter);
         for (let index of indexes) {
@@ -101,10 +98,8 @@ const WordleGrid = () => {
           ) {
             continue;
           }
-          box.classList.remove("bg-gray-200");
-          box.classList.remove("dark:bg-zinc-700");
-          box.classList.add("bg-yellow-400");
-          box.classList.add("dark:bg-yellow-500");
+          box.classList.remove("bg-zinc-700");
+          box.classList.add("bg-yellow-500");
           break;
         }
       }
@@ -153,7 +148,7 @@ const WordleGrid = () => {
         {Array.from({ length: AMT_ROWS * AMT_COLS }).map((_, i) => (
           <div
             key={i}
-            className="bg-gray-200 dark:bg-zinc-700 rounded size-20 dark:text-white items-center justify-center flex text-4xl"
+            className="bg-zinc-700 rounded size-20 text-white items-center justify-center flex text-4xl"
           />
         ))}
       </div>
@@ -166,11 +161,11 @@ const WordleGrid = () => {
             }
           }}
         >
-          <div className="dark:text-white bg-gray-300 dark:bg-zinc-800 items-center flex rounded p-8 flex-col">
+          <div className="text-white bg-zinc-800 items-center flex rounded p-8 flex-col">
             {endScreenText}
             <div className="h-4" />
             <div
-              className="bg-zinc-200 dark:bg-zinc-900 p-2 rounded-lg flex-row flex items-center justify-center cursor-pointer"
+              className="bg-zinc-900 p-2 rounded-lg flex-row flex items-center justify-center cursor-pointer"
               onClick={() => location.reload()}
             >
               Reset?
