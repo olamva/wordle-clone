@@ -48,7 +48,7 @@ const WordleGrid = () => {
 
     if (currentCol === AMT_COLS) return;
     const nextDiv = divs[currentRow * AMT_COLS + currentCol];
-    if (e.key.length !== 1 || !/[a-z]/.test(e.key)) return;
+    if (e.key.length !== 1 || !/[a-zA-Z]/.test(e.key)) return;
     if (currentCol === AMT_COLS - 1 && nextDiv.innerHTML !== "") return;
     nextDiv.innerHTML = e.key.toUpperCase();
     currentWord.push(e.key.toLowerCase());
