@@ -9,13 +9,11 @@ const WordleGrid = () => {
   const AMT_COLS = 5;
 
   let currentRow = 0;
-  let nextEmptyCol = 0;
+  let currentCol = 0;
   let currentWord: string[] = [];
   let isDone = false;
 
   const wordToCheck = answers[Math.floor(Math.random() * answers.length)];
-  // console.log(wordToCheck);
-  // const wordToCheck = "crane";
 
   const divRef = useRef<HTMLDivElement>(null);
 
@@ -30,19 +28,19 @@ const WordleGrid = () => {
       }
     }
 
-    if (e.key === "Backspace" && nextEmptyCol > 0) {
-      divs[currentRow * AMT_COLS + nextEmptyCol - 1].innerHTML = "";
+    if (e.key === "Backspace" && currentCol > 0) {
+      divs[currentRow * AMT_COLS + currentCol - 1].innerHTML = "";
       currentWord.pop();
-      if (nextEmptyCol > 0) nextEmptyCol--;
+      if (currentCol > 0) currentCol--;
       return;
     }
-    if (nextEmptyCol === AMT_COLS) return;
-    const nextDiv = divs[currentRow * AMT_COLS + nextEmptyCol];
+    if (currentCol === AMT_COLS) return;
+    const nextDiv = divs[currentRow * AMT_COLS + currentCol];
     if (e.key.length !== 1 || !/[a-z]/.test(e.key)) return;
-    if (nextEmptyCol === AMT_COLS - 1 && nextDiv.innerHTML !== "") return;
+    if (currentCol === AMT_COLS - 1 && nextDiv.innerHTML !== "") return;
     nextDiv.innerHTML = e.key.toUpperCase();
     currentWord.push(e.key.toLowerCase());
-    if (nextEmptyCol !== AMT_COLS) nextEmptyCol++;
+    if (currentCol !== AMT_COLS) currentCol++;
   };
 
   useEffect(() => {
@@ -73,12 +71,30 @@ const WordleGrid = () => {
     wordToCheck.split("").forEach((letter, i) => {
       if (letter === currentWord[i]) {
         const box = divs[currentRow * AMT_COLS + i];
+        box.classList.remove("bg-gray-200");
+        box.classList.remove("dark:bg-zinc-700");
+        if (box.classList.contains("bg-yellow-400")) {
+          box.classList.remove("bg-yellow-400");
+          box.classList.remove("dark:bg-yellow-500");
+        }
         box.classList.add("bg-green-400");
         box.classList.add("dark:bg-green-500");
       } else if (currentWord.includes(letter)) {
-        const box = divs[currentRow * AMT_COLS + currentWord.indexOf(letter)];
-        box.classList.add("bg-yellow-400");
-        box.classList.add("dark:bg-yellow-500");
+        const indexes = findAllMatchingLetterIndexes(currentWord, letter);
+        for (let index of indexes) {
+          const box = divs[currentRow * AMT_COLS + index];
+          if (
+            box.classList.contains("bg-yellow-400") ||
+            box.classList.contains("bg-green-400")
+          ) {
+            continue;
+          }
+          box.classList.remove("bg-gray-200");
+          box.classList.remove("dark:bg-zinc-700");
+          box.classList.add("bg-yellow-400");
+          box.classList.add("dark:bg-yellow-500");
+          break;
+        }
       }
     });
     if (validationCheck === 1) {
@@ -92,9 +108,22 @@ const WordleGrid = () => {
       return;
     }
     currentRow++;
-    nextEmptyCol = 0;
+    currentCol = 0;
     currentWord = [];
     return;
+  };
+
+  const findAllMatchingLetterIndexes = (
+    word: string[],
+    letter: string,
+  ): number[] => {
+    const indexes: number[] = [];
+    word.forEach((char, i) => {
+      if (char === letter) {
+        indexes.push(i);
+      }
+    });
+    return indexes;
   };
 
   return (
