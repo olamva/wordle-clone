@@ -14,8 +14,7 @@ const WordleGrid = () => {
   let currentWord: string[] = [];
   const [isDone, setIsDone] = useState<boolean>(false);
 
-  let wordToCheck = answers[Math.floor(Math.random() * answers.length)];
-  console.log(wordToCheck);
+  const wordToCheck = answers[Math.floor(Math.random() * answers.length)];
 
   const divRef = useRef<HTMLDivElement>(null);
 
@@ -34,7 +33,6 @@ const WordleGrid = () => {
     const divs = divRef.current.children;
     if (e.key === "Enter") {
       e.preventDefault();
-      console.log(currentWord, currentRow, currentCol);
       if (currentRow < AMT_ROWS && currentWord.length === AMT_COLS) {
         handleCheck(divs);
       }
@@ -143,27 +141,6 @@ const WordleGrid = () => {
     return indexes;
   };
 
-  const reset = () => {
-    currentRow = 0;
-    currentCol = 0;
-    currentWord = [];
-    setIsDone(false);
-    setDisplayEndScreen(false);
-    setEndScreenText("");
-    if (divRef.current === null) return;
-    const divs = divRef.current.children;
-    for (let i = 0; i < divs.length; i++) {
-      divs[i].innerHTML = "";
-      divs[i].classList.remove("bg-green-400");
-      divs[i].classList.remove("dark:bg-green-500");
-      divs[i].classList.remove("bg-yellow-400");
-      divs[i].classList.remove("dark:bg-yellow-500");
-      divs[i].classList.add("bg-gray-200");
-      divs[i].classList.add("dark:bg-zinc-700");
-    }
-    wordToCheck = answers[Math.floor(Math.random() * answers.length)];
-  };
-
   const showEndScreen = () => {
     setTimeout(() => {
       setDisplayEndScreen(true);
@@ -194,7 +171,7 @@ const WordleGrid = () => {
             <div className="h-4" />
             <div
               className="bg-zinc-200 dark:bg-zinc-900 p-2 rounded-lg flex-row flex items-center justify-center cursor-pointer"
-              onClick={reset}
+              onClick={() => location.reload()}
             >
               Reset?
               <div className="w-2" />
