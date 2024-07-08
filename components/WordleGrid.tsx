@@ -83,7 +83,9 @@ const WordleGrid = () => {
     wordToCheck.split("").forEach((letter, i) => {
       if (letter === currentWord[i]) {
         const box = divs[currentRow * AMT_COLS + i];
-        box.classList.remove("bg-zinc-700");
+        if (box.classList.contains("bg-zinc-700")) {
+          box.classList.remove("bg-zinc-700");
+        }
         if (box.classList.contains("bg-yellow-400")) {
           box.classList.remove("bg-yellow-500");
         }
@@ -94,16 +96,26 @@ const WordleGrid = () => {
           const box = divs[currentRow * AMT_COLS + index];
           if (
             box.classList.contains("bg-yellow-400") ||
-            box.classList.contains("bg-green-400")
+            box.classList.contains("bg-green-400") ||
+            box.classList.contains("bg-zinc-700")
           ) {
             continue;
           }
-          box.classList.remove("bg-zinc-700");
           box.classList.add("bg-yellow-500");
           break;
         }
       }
     });
+    for (let i = 0; i < AMT_COLS; i++) {
+      const box = divs[currentRow * AMT_COLS + i];
+      if (
+        box.classList.contains("bg-green-500") ||
+        box.classList.contains("bg-yellow-500")
+      ) {
+        continue;
+      }
+      box.classList.add("bg-zinc-700");
+    }
 
     if (validationCheck === 1) {
       setEndScreenText("You win!");
@@ -148,7 +160,7 @@ const WordleGrid = () => {
         {Array.from({ length: AMT_ROWS * AMT_COLS }).map((_, i) => (
           <div
             key={i}
-            className="bg-zinc-700 rounded size-20 text-white items-center justify-center flex text-4xl"
+            className="border rounded size-20 text-white items-center justify-center flex text-4xl"
           />
         ))}
       </div>
