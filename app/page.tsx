@@ -1,4 +1,4 @@
-import WordleGrid from "@/components/WordleGrid";
+import Wordle from "@/components/Wordle";
 
 export default function Home() {
   return (
@@ -8,7 +8,7 @@ export default function Home() {
           Wordle
         </div>
         <div className="absolute inset-0 flex justify-center items-center">
-          <WordleGrid />
+          <Wordle />
         </div>
       </div>
     </>
