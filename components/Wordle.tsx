@@ -87,7 +87,7 @@ const Wordle = () => {
             const box = divs[currentRow.current * AMT_COLS + index];
             if (
               box.classList.contains("bg-yellow-500") ||
-              box.classList.contains("bg-green-400") ||
+              box.classList.contains("bg-green-500") ||
               box.classList.contains("bg-zinc-800")
             ) {
               continue;
