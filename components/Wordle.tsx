@@ -13,7 +13,9 @@ const Wordle = () => {
   const currentWord = useRef<string[]>([]);
   const [isDone, setIsDone] = useState<boolean>(false);
 
-  const wordToCheck = answers[Math.floor(Math.random() * answers.length)];
+  const wordToCheck = useRef<string>(
+    answers[Math.floor(Math.random() * answers.length)],
+  );
 
   const divRef = useRef<HTMLDivElement>(null);
 
@@ -28,7 +30,7 @@ const Wordle = () => {
   const validateGuess = useCallback(
     (guess: string[]) => {
       const guessToCheck = guess.join("");
-      if (wordToCheck === guessToCheck) return 1;
+      if (wordToCheck.current === guessToCheck) return 1;
       if (
         allowedGuesses.includes(guessToCheck) ||
         answers.includes(guessToCheck)
@@ -50,9 +52,9 @@ const Wordle = () => {
     setTimeout(() => {
       if (divRef.current === null) return;
       for (let i = 0; i < AMT_COLS; i++) {
-        divRef.current.children[currentRow.current * AMT_COLS + i].classList.remove(
-          "animate-wiggle",
-        );
+        divRef.current.children[
+          currentRow.current * AMT_COLS + i
+        ].classList.remove("animate-wiggle");
       }
     }, 500);
     setTimeout(() => {
@@ -66,7 +68,7 @@ const Wordle = () => {
       if (validationCheck === -1) {
         return handleNotInWordList();
       }
-      wordToCheck.split("").forEach((letter, i) => {
+      wordToCheck.current.split("").forEach((letter, i) => {
         if (letter === currentWord.current[i]) {
           const box = divs[currentRow.current * AMT_COLS + i];
           if (box.classList.contains("bg-zinc-800")) {
@@ -114,7 +116,7 @@ const Wordle = () => {
       }
       if (currentRow.current === AMT_ROWS - 1) {
         setEndScreenText(
-          "You lost... The word was " + wordToCheck.toUpperCase(),
+          "You lost... The word was " + wordToCheck.current.toUpperCase(),
         );
         setIsDone(true);
         showEndScreen();
@@ -141,14 +143,18 @@ const Wordle = () => {
       const divs = divRef.current.children;
       if (e.key === "Enter") {
         e.preventDefault();
-        if (currentRow.current < AMT_ROWS && currentWord.current.length === AMT_COLS) {
+        if (
+          currentRow.current < AMT_ROWS &&
+          currentWord.current.length === AMT_COLS
+        ) {
           handleCheck(divs);
         }
         return;
       }
 
       if (e.key === "Backspace" && currentCol.current > 0) {
-        divs[currentRow.current * AMT_COLS + currentCol.current - 1].innerHTML = "";
+        divs[currentRow.current * AMT_COLS + currentCol.current - 1].innerHTML =
+          "";
         currentWord.current.pop();
         if (currentCol.current > 0) currentCol.current--;
         return;

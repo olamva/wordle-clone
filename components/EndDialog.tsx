@@ -7,7 +7,7 @@ interface EndDialogProps {
 const EndDialog = ({ setDisplayEndScreen, endScreenText }: EndDialogProps) => {
   return (
     <div
-      className="backdrop-blur-sm size-full  justify-center items-center flex fixed"
+      className="backdrop-blur-sm size-full  justify-center items-center flex fixed inset-0"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           setDisplayEndScreen(false);
