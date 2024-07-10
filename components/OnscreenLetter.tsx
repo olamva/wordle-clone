@@ -10,7 +10,7 @@ const OnscreenLetter = ({ letter }: { letter: string }) => {
 
   return (
     <div
-      className="border border-zinc-600 bg-zinc-800 rounded h-16 min-w-16 w-fit text-white items-center justify-center flex text-2xl p-2 cursor-pointer select-none"
+      className="border border-zinc-600 bg-zinc-800 rounded h-12 md:h-16 min-w-8 md:min-w-16 w-fit text-white items-center justify-center flex text-2xl p-2 cursor-pointer select-none"
       onClick={handleClick}
     >
       {letter === "Backspace" ? <Backspace /> : letter}
