@@ -2,10 +2,15 @@
 
 import HardModeToggle from "@/components/HardModeToggle";
 import Wordle from "@/components/Wordle";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const [isHardMode, setIsHardMode] = useState<boolean>(false);
+
+  useEffect(() => {
+    const savedHardMode = localStorage.getItem("isHardMode");
+    if (savedHardMode !== null) setIsHardMode(JSON.parse(savedHardMode));
+  }, []);
 
   return (
     <>

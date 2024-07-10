@@ -1,33 +1,22 @@
 "use client";
 
-import { Dispatch, SetStateAction, useEffect, useRef } from "react";
+import { Dispatch, SetStateAction, useRef } from "react";
 
 interface HardModeToggleProps {
   isHardMode: boolean;
   setIsHardMode: Dispatch<SetStateAction<boolean>>;
 }
+
 const HardModeToggle = ({ isHardMode, setIsHardMode }: HardModeToggleProps) => {
   const toggleRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (toggleRef.current === null) return;
-    const child = toggleRef.current.children[0];
-    if (isHardMode) {
-      toggleRef.current.classList.remove("bg-zinc-600");
-      toggleRef.current.classList.add("bg-green-500");
-      child.classList.remove("ml-[1px]");
-      child.classList.add("translate-x-full");
-    } else {
-      toggleRef.current.classList.remove("bg-green-500");
-      toggleRef.current.classList.add("bg-zinc-600");
-      child.classList.remove("translate-x-full");
-      child.classList.add("ml-[1px]");
-    }
-  }, [isHardMode]);
-
   const toggleHardMode = () => {
     setIsHardMode((prev) => !prev);
+    localStorage.setItem("isHardMode", JSON.stringify(!isHardMode));
   };
+
+  const toggleClasses = isHardMode ? "bg-green-500" : "bg-zinc-600";
+  const childClasses = isHardMode ? "translate-x-full" : "ml-[1px]";
 
   return (
     <div
@@ -36,10 +25,12 @@ const HardModeToggle = ({ isHardMode, setIsHardMode }: HardModeToggleProps) => {
     >
       Hard mode?
       <div
-        className="rounded-lg w-7 h-4 border-zinc-700 border bg-zinc-600 ml-1 items-center flex transition-colors"
+        className={`rounded-lg w-7 h-4 border-zinc-700 border ${toggleClasses} ml-2 mr-1 items-center flex transition-colors scale-110 origin-top-right`}
         ref={toggleRef}
       >
-        <div className="bg-zinc-800 size-3 rounded-full ml-[1px] transition-all transform" />
+        <div
+          className={`bg-zinc-800 size-3 rounded-full transition-all transform ${childClasses}`}
+        />
       </div>
     </div>
   );
