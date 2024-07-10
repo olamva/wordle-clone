@@ -20,7 +20,7 @@ const HardModeToggle = ({ isHardMode, setIsHardMode }: HardModeToggleProps) => {
 
   return (
     <div
-      className="absolute top-0 right-0 text-white font-extralight flex items-center cursor-pointer m-1"
+      className="absolute top-0 right-0 text-white font-extralight flex items-center cursor-pointer m-1 select-none"
       onClick={toggleHardMode}
     >
       Hard mode?

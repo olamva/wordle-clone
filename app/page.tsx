@@ -1,6 +1,7 @@
 "use client";
 
 import HardModeToggle from "@/components/HardModeToggle";
+import OnscreenKeyboard from "@/components/OnscreenKeyboard";
 import Wordle from "@/components/Wordle";
 import { useEffect, useState } from "react";
 
@@ -22,6 +23,7 @@ export default function Home() {
         <div className="mt-10 flex justify-center items-center">
           <Wordle isHardMode={isHardMode} />
         </div>
+        <OnscreenKeyboard />
       </div>
     </>
   );
