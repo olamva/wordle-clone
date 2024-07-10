@@ -16,10 +16,10 @@ export default function Home() {
     <>
       <div className="h-screen">
         <HardModeToggle isHardMode={isHardMode} setIsHardMode={setIsHardMode} />
-        <div className="text-white text-6xl font-thin flex justify-center pt-20">
+        <div className="text-white text-5xl font-thin flex justify-center pt-8">
           Wordle
         </div>
-        <div className="mt-8 flex justify-center items-center">
+        <div className="mt-10 flex justify-center items-center">
           <Wordle isHardMode={isHardMode} />
         </div>
       </div>

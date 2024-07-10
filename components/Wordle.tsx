@@ -247,7 +247,7 @@ const Wordle = ({ isHardMode }: WordleProps) => {
   return (
     <div className="relative">
       {displayErrorMsg && (
-        <div className="text-white absolute top-[-32px] inset-x-0 bg-zinc-800 w-fit justify-self-center px-2 rounded-md">
+        <div className="text-white absolute top-[-36px] inset-x-0 bg-zinc-800 w-fit justify-self-center px-2 rounded-md">
           {errorMsgText}
         </div>
       )}
