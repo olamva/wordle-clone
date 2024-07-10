@@ -14,7 +14,7 @@ const config: Config = {
           "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
       },
       keyframes: {
-        slide: {
+        slideVertical: {
           "0%": {
             transform: "translateY(50%)",
             backgroundColor: "rgba(39, 39, 42, 0.5)",
@@ -37,7 +37,7 @@ const config: Config = {
         },
       },
       animation: {
-        slide: "slide 0.5s cubic-bezier(0.4, 0, 0.6, 1)",
+        slideVertical: "slideVertical 0.5s cubic-bezier(0.4, 0, 0.6, 1)",
         wiggle: "wiggle 0.2s cubic-bezier(0.4, 0, 0.6, 1)",
       },
     },

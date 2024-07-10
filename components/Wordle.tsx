@@ -7,11 +7,17 @@ import allowedGuesses from "@/public/wordle-allowed-guesses.json";
 import answers from "@/public/wordle-answers-alphabetical.json";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const Wordle = () => {
+interface WordleProps {
+  isHardMode: boolean;
+}
+const Wordle = ({ isHardMode }: WordleProps) => {
   const currentRow = useRef<number>(0);
   const currentCol = useRef<number>(0);
   const currentWord = useRef<string[]>([]);
   const [isDone, setIsDone] = useState<boolean>(false);
+
+  const greenLetters = useRef<string[]>([]);
+  const yellowLetters = useRef<Set<string>>(new Set());
 
   const wordToCheck = useRef<string>(
     answers[Math.floor(Math.random() * answers.length)],
@@ -21,8 +27,8 @@ const Wordle = () => {
 
   const [displayEndScreen, setDisplayEndScreen] = useState<boolean>(false);
   const [endScreenText, setEndScreenText] = useState<string>("");
-  const [displayNotInWordList, setDisplayNotInWordList] =
-    useState<boolean>(false);
+  const [displayErrorMsg, setDisplayErrorMsg] = useState<boolean>(false);
+  const [errorMsgText, setErrorMsgText] = useState<string>("");
 
   /**
    * @returns `-1` if guess is invalid, `0` if guess is incorrect, or `1` if guess is correct
@@ -41,9 +47,9 @@ const Wordle = () => {
     [wordToCheck],
   );
 
-  const handleNotInWordList = useCallback(() => {
+  const handleErrorMsg = useCallback(() => {
     if (divRef.current === null) return;
-    setDisplayNotInWordList(true);
+    setDisplayErrorMsg(true);
     for (let i = 0; i < AMT_COLS; i++) {
       divRef.current.children[currentRow.current * AMT_COLS + i].classList.add(
         "animate-wiggle",
@@ -58,26 +64,51 @@ const Wordle = () => {
       }
     }, 500);
     setTimeout(() => {
-      setDisplayNotInWordList(false);
+      setDisplayErrorMsg(false);
     }, 1500);
   }, [currentRow]);
+
+  const hardModeCheck = useCallback(() => {
+    const unusedLetters = greenLetters.current
+      .filter(
+        (letter, i) =>
+          letter !== undefined && letter !== currentWord.current[i],
+      )
+      .concat(
+        Array.from(yellowLetters.current).filter(
+          (letter) => !currentWord.current.includes(letter),
+        ),
+      );
+
+    if (unusedLetters.length === 0) {
+      return true;
+    }
+
+    let errorMsg = "YOUR GUESS NEEDS TO USE THE HINTS FOR ";
+    unusedLetters.forEach((letter, i) => {
+      errorMsg += i === unusedLetters.length - 1 ? letter : letter + ", ";
+    });
+    setErrorMsgText(errorMsg.toUpperCase());
+    return false;
+  }, [greenLetters, yellowLetters]);
 
   const handleCheck = useCallback(
     (divs: HTMLCollection) => {
       const validationCheck = validateGuess(currentWord.current);
       if (validationCheck === -1) {
-        return handleNotInWordList();
+        setErrorMsgText("NOT IN WORD LIST");
+        return handleErrorMsg();
       }
+      if (isHardMode && !hardModeCheck()) return handleErrorMsg();
+
       wordToCheck.current.split("").forEach((letter, i) => {
         if (letter === currentWord.current[i]) {
           const box = divs[currentRow.current * AMT_COLS + i];
-          if (box.classList.contains("bg-zinc-800")) {
-            box.classList.remove("bg-zinc-800");
-          }
           if (box.classList.contains("bg-yellow-500")) {
             box.classList.remove("bg-yellow-500");
           }
           box.classList.add("bg-green-500");
+          greenLetters.current[i] = letter;
         } else if (currentWord.current.includes(letter)) {
           const indexes = findAllMatchingLetterIndexes(
             currentWord.current,
@@ -87,12 +118,12 @@ const Wordle = () => {
             const box = divs[currentRow.current * AMT_COLS + index];
             if (
               box.classList.contains("bg-yellow-500") ||
-              box.classList.contains("bg-green-500") ||
-              box.classList.contains("bg-zinc-800")
+              box.classList.contains("bg-green-500")
             ) {
               continue;
             }
             box.classList.add("bg-yellow-500");
+            yellowLetters.current.add(letter);
             break;
           }
         }
@@ -127,7 +158,14 @@ const Wordle = () => {
       currentWord.current = [];
       return;
     },
-    [currentRow, validateGuess, wordToCheck, handleNotInWordList],
+    [
+      currentRow,
+      validateGuess,
+      wordToCheck,
+      handleErrorMsg,
+      isHardMode,
+      hardModeCheck,
+    ],
   );
 
   const handleKeyDown = useCallback(
@@ -208,9 +246,9 @@ const Wordle = () => {
 
   return (
     <div className="relative">
-      {displayNotInWordList && (
-        <div className="text-white absolute top-[-36px] inset-x-0 bg-zinc-800 w-fit justify-self-center px-2 rounded-md">
-          NOT IN WORD LIST
+      {displayErrorMsg && (
+        <div className="text-white absolute top-[-32px] inset-x-0 bg-zinc-800 w-fit justify-self-center px-2 rounded-md">
+          {errorMsgText}
         </div>
       )}
       <WordleGrid divRef={divRef} />

@@ -14,7 +14,7 @@ const EndDialog = ({ setDisplayEndScreen, endScreenText }: EndDialogProps) => {
         }
       }}
     >
-      <div className="text-white bg-zinc-800 items-center flex rounded-lg p-8 flex-col animate-slide">
+      <div className="text-white bg-zinc-800 items-center flex rounded-lg p-8 flex-col animate-slideVertical">
         {endScreenText}
         <div className="h-4" />
         <div
