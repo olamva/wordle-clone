@@ -8,7 +8,7 @@ const OnscreenKeyboard = () => {
   ];
 
   return (
-    <div className="text-white flex justify-center mt-12">
+    <div className="flex justify-center mt-12">
       <div className="flex flex-col items-center">
         {keys.map((row, i) => (
           <div key={i} className="flex gap-1 mt-1">
