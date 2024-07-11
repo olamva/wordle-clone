@@ -11,7 +11,6 @@ const OnscreenLetter = ({ letter }: { letter: string }) => {
     e.preventDefault();
     const event = new KeyboardEvent("keydown", { key: letter });
     document.dispatchEvent(event);
-    console.log(greenLetters, yellowLetters, grayLetters);
   };
 
   const { greenLetters, yellowLetters, grayLetters } =
@@ -22,7 +21,7 @@ const OnscreenLetter = ({ letter }: { letter: string }) => {
     if (letter === "Backspace" || letter === "Enter" || div === null) {
       return;
     }
-    console.log(...greenLetters, ...yellowLetters, ...grayLetters, letter);
+
     if (greenLetters.includes(letter)) {
       div.classList.remove("bg-zinc-700");
       div.classList.add("bg-green-500");
