@@ -3,9 +3,10 @@
 import { AMT_COLS, AMT_ROWS } from "@/app/data/constants";
 import EndDialog from "@/components/EndDialog";
 import WordleGrid from "@/components/WordleGrid";
+import { ColorsContext } from "@/contexts/ColorsContext";
 import allowedGuesses from "@/public/wordle-allowed-guesses.json";
 import answers from "@/public/wordle-answers-alphabetical.json";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
 
 interface WordleProps {
   isHardMode: boolean;
@@ -16,8 +17,11 @@ const Wordle = ({ isHardMode }: WordleProps) => {
   const currentWord = useRef<string[]>([]);
   const [isDone, setIsDone] = useState<boolean>(false);
 
-  const greenLetters = useRef<string[]>([]);
-  const yellowLetters = useRef<Set<string>>(new Set());
+  const { setGreenLetters, setYellowLetters, setGrayLetters } =
+    useContext(ColorsContext);
+
+  const greenLetterPositions = useRef<string[]>([]);
+  const yellowLetterPositions = useRef<Set<string>>(new Set());
 
   const wordToCheck = useRef<string>(
     answers[Math.floor(Math.random() * answers.length)],
@@ -69,13 +73,13 @@ const Wordle = ({ isHardMode }: WordleProps) => {
   }, [currentRow]);
 
   const hardModeCheck = useCallback(() => {
-    const unusedLetters = greenLetters.current
+    const unusedLetters = greenLetterPositions.current
       .filter(
         (letter, i) =>
           letter !== undefined && letter !== currentWord.current[i],
       )
       .concat(
-        Array.from(yellowLetters.current).filter(
+        Array.from(yellowLetterPositions.current).filter(
           (letter) => !currentWord.current.includes(letter),
         ),
       );
@@ -90,7 +94,7 @@ const Wordle = ({ isHardMode }: WordleProps) => {
     });
     setErrorMsgText(errorMsg.toUpperCase());
     return false;
-  }, [greenLetters, yellowLetters]);
+  }, [greenLetterPositions, yellowLetterPositions]);
 
   const handleCheck = useCallback(
     (divs: HTMLCollection) => {
@@ -108,7 +112,8 @@ const Wordle = ({ isHardMode }: WordleProps) => {
             box.classList.remove("bg-yellow-500");
           }
           box.classList.add("bg-green-500");
-          greenLetters.current[i] = letter;
+          greenLetterPositions.current[i] = letter;
+          setGreenLetters((prev) => [...prev, letter.toUpperCase()]);
         } else if (currentWord.current.includes(letter)) {
           const indexes = findAllMatchingLetterIndexes(
             currentWord.current,
@@ -123,7 +128,8 @@ const Wordle = ({ isHardMode }: WordleProps) => {
               continue;
             }
             box.classList.add("bg-yellow-500");
-            yellowLetters.current.add(letter);
+            yellowLetterPositions.current.add(letter);
+            setYellowLetters((prev) => [...prev, letter.toUpperCase()]);
             break;
           }
         }
@@ -137,6 +143,8 @@ const Wordle = ({ isHardMode }: WordleProps) => {
           continue;
         }
         box.classList.add("bg-zinc-800");
+        const letter = currentWord.current[i].toUpperCase();
+        setGrayLetters((prev) => [...prev, letter]);
       }
 
       if (validationCheck === 1) {
@@ -165,6 +173,9 @@ const Wordle = ({ isHardMode }: WordleProps) => {
       handleErrorMsg,
       isHardMode,
       hardModeCheck,
+      setGreenLetters,
+      setYellowLetters,
+      setGrayLetters,
     ],
   );
 
@@ -247,7 +258,7 @@ const Wordle = ({ isHardMode }: WordleProps) => {
   return (
     <div className="relative">
       {displayErrorMsg && (
-        <div className="text-white absolute top-[-36px] inset-x-0 bg-zinc-800 w-fit justify-self-center px-2 rounded-md">
+        <div className="text-white text-center absolute top-[-36px] inset-x-0 bg-zinc-800 w-fit justify-self-center px-2 rounded-md">
           {errorMsgText}
         </div>
       )}
